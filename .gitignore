@@ -1,24 +1,24 @@
-# ── Dependencies ──────────────────────────────────────────────────────────────
+# dependencies
 node_modules/
 .pnp
 .pnp.js
 
-# ── Build output ──────────────────────────────────────────────────────────────
+# build output
 dist/
 dist-ssr/
 build/
 
-# ── Environment / secrets ─────────────────────────────────────────────────────
+# env
 .env
 .env.local
 .env.*.local
 .env.production
 
-# ── Vite ──────────────────────────────────────────────────────────────────────
+# vite
 *.local
 vite.config.js.timestamp-*
 
-# ── Logs ──────────────────────────────────────────────────────────────────────
+# logs 
 logs/
 *.log
 npm-debug.log*
@@ -26,12 +26,12 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# ── OS junk ───────────────────────────────────────────────────────────────────
+# OS junk
 .DS_Store
 Thumbs.db
 Desktop.ini
 
-# ── Editor / IDE ──────────────────────────────────────────────────────────────
+# Editor / IDE
 .vscode/
 .idea/
 *.suo
@@ -40,7 +40,7 @@ Desktop.ini
 *.sln
 *.sw?
 
-# ── Capacitor / Android build artifacts ───────────────────────────────────────
+# capacitor / android build
 android/.gradle/
 android/app/build/
 android/build/
@@ -50,9 +50,9 @@ android/.idea/
 android/**/*.iml
 android/app/release/
 
-# ── Capacitor generated assets (keep source, ignore generated) ────────────────
+# capacitor generated assets
 assets/
 
-# ── Test / scratch ────────────────────────────────────────────────────────────
+# Test / scratch
 test-*.js
 mock-server.js

@@ -1,0 +1,41 @@
+.flex5 {
+  background: var(--gd);
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ghost5 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ghost5 span {
+  font-size: 46px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.top3 {
+  color: rgba(255, 255, 255, .55);
+  font-size: 14px;
+}
+
+.bussin5 {
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}

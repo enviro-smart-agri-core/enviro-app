@@ -1,0 +1,13 @@
+{
+  "appId": "com.enviro.com",
+  "appName": "enviro",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

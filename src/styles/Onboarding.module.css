@@ -1,0 +1,64 @@
+.text3 {
+  background: #fff;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.main3 {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0faf4;
+  padding: 24px 20px;
+  min-height: 300px;
+  overflow: hidden;
+}
+
+.main3 img {
+  width: 100%;
+  max-width: 320px;
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+.content {
+  padding: 24px 24px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.wrap3 {
+  text-align: center;
+}
+
+.wrap3 h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--gd);
+  margin-bottom: 10px;
+}
+
+.wrap3 p {
+  font-size: 15px;
+  color: var(--tm);
+  line-height: 1.4;
+}
+
+.grid3 {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--td);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 10;
+}

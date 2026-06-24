@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  network_security_config.xml
+  
+  ⚠️ THIS FILE IS CRITICAL — without it, Android 9+ blocks all HTTP requests
+  and you get "Failed to fetch" in the APK even though npm run dev works fine.
+  
+  Why: browsers on desktop don't enforce this. Android WebView does.
+  The backend is on HTTP (not HTTPS), so we need to explicitly allow it.
+  
+  How to use:
+    1. Put this file at: android/app/src/main/res/xml/network_security_config.xml
+    2. Reference it in AndroidManifest.xml (see the other file in android-setup/)
+  
+  TODO: once ahmed puts SSL on the server (https://...), remove the cleartextTrafficPermitted
+        and just keep the domain entry — HTTPS works without any special config
+-->
+<network-security-config>
+  
+  <!-- allow HTTP to the backend server -->
+  <domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="false">51.21.241.218</domain>
+  </domain-config>
+  
+  <!-- S3 is already HTTPS so no special config needed — but listing it for clarity -->
+  <domain-config cleartextTrafficPermitted="false">
+    <domain includeSubdomains="true">amazonaws.com</domain>
+  </domain-config>
+  
+  <!-- everything else follows the default — HTTPS only -->
+  <base-config cleartextTrafficPermitted="false" />
+
+</network-security-config>

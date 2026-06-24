@@ -1,0 +1,26 @@
+.base3 {
+    border: 2px dashed #c0d0c0;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 55px 20px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.base3:active {
+    background: #f0f8f0;
+}
+
+.core3 {
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fffbe6;
+    border-left: 4px solid #f5a623;
+}

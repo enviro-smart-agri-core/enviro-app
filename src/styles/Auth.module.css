@@ -1,0 +1,132 @@
+.left2 {
+  background: #fff;
+  min-height: 100dvh;
+}
+
+.right2 {
+  flex: 1;
+  padding: 32px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+.surface2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--td);
+  text-align: center;
+}
+
+.link2 {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--td);
+}
+
+.link2 a {
+  color: #1a7ac8;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.core2 {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a7a50;
+  text-decoration: none;
+  display: block;
+}
+
+.forgot2 {
+  text-align: right;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--td);
+  text-decoration: none;
+  display: block;
+}
+
+.peak2 {
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f0faf4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.peak2 img {
+  width: 100%;
+  max-width: 280px;
+  object-fit: contain;
+}
+
+.vibe3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mu);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.vibe3::before,
+.vibe3::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--br);
+}
+
+.drip3 {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+}
+
+.aura3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--td);
+  font-weight: 500;
+  transition: transform .15s;
+}
+
+.aura3:active {
+  transform: scale(.96);
+}
+
+.goat3 {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bet3 {
+  background: #1877f2;
+}
+
+.base2 {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--td);
+}
+
+.flex3 {
+  background: #fff;
+  border: 1px solid #ddd;
+}

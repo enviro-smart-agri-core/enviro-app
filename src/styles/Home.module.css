@@ -1,0 +1,72 @@
+.valid3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 52px 20px 12px;
+    background: var(--bg);
+}
+
+.valid3 h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--gd);
+}
+
+.mid3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.cap3 {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #dce8dc;
+    border: 2px solid var(--gb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box3 {
+    font-size: 11px;
+    color: var(--mu);
+    font-weight: 500;
+}
+
+.card3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.col {
+    width: 38px;
+    height: 38px;
+    background: var(--gp);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.col svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--gd);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.item3 {
+    background: var(--gd);
+}
+
+.item3 svg {
+    stroke: #fff;
+}

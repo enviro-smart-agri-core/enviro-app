@@ -1,0 +1,9 @@
+{
+  "endpoint": "https://nonvocational-dovie-unobnoxiously.ngrok-free.dev/chat",
+  "method": "POST",
+  "payload": {
+    "user_name": "tomato_test_78",
+    "plant_id": "test_plant_005",
+    "question": "how is my plant?"
+  }
+}

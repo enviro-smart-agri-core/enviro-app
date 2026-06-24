@@ -1,0 +1,1130 @@
+{
+  "info": {
+    "_postman_id": "enviro-smart-full-api",
+    "name": "Enviro-Smart Agriculture \u2014 Full API",
+    "description": "Complete API collection for all modules: Auth, Plants, Sensor Linking, AI Diagnosis, E-Commerce (Products, Cart, Orders), and Admin. Connect via Socket.IO for real-time events.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plantId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plantObjectKey",
+      "value": "",
+      "type": "string",
+      "description": "Auto-set by Step 1 \u2014 Get Plant Image Upload URL"
+    },
+    {
+      "key": "plantUploadUrl",
+      "value": "",
+      "type": "string",
+      "description": "Auto-set by Step 1 \u2014 Get Plant Image Upload URL"
+    },
+    {
+      "key": "sha256",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "plantType",
+      "value": "Monstera Deliciosa",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register Request",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"plantlover99\",\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123\",\n    \"name\": \"Mahmoud\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/request",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "request"
+              ]
+            },
+            "description": "Step 1 of registration. Sends OTP to the provided email. No auth required."
+          },
+          "response": []
+        },
+        {
+          "name": "Register Verify (OTP)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register",
+                "verify"
+              ]
+            },
+            "description": "Step 2 of registration. Submits the OTP received by email to activate the account."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "var t = j.token || (j.data && j.data.token);",
+                  "if (t) { pm.collectionVariables.set('token', t); console.log('Token saved.'); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"Password123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Logs in and automatically saves the JWT to {{token}} collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"email\": \"user@example.com\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "forgot-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"userId\": \"<userId from email link>\",\n    \"token\": \"<resetToken from email link>\",\n    \"newPassword\": \"NewPassword123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Plants",
+      "description": "All routes require Bearer auth ({{token}}).\n\n### New fields\n| Field | Where | Notes |\n|---|---|---|\n| `pictureKey` | create / update body | Optional raw S3 object key e.g. `plants/{id}/{uuid}.jpg`. Obtain via the image upload flow. |\n| `initialAgeDays` | create / update body | Optional integer \u2265 0. How old the plant already was when registered. `daysOld` = `initialAgeDays` + days since registration. |\n| `pictureUrl` | GET response | Full `https://<bucket>.s3.<region>.amazonaws.com/<key>` URL built at read-time. `null` if no picture uploaded yet. CDN is currently disabled. |\n| `daysOld` | GET response | Computed virtual \u2014 never stored in the DB. |\n\n### Plant image upload flow (3 steps)\n1. `POST /:plantId/upload-url` \u2192 receive `{ objectKey, uploadUrl }`\n2. `PUT <uploadUrl>` directly to S3 (no Authorization header) with the image binary\n3. `PUT /:plantId` with `{ pictureKey: objectKey }` to persist the reference",
+      "item": [
+        {
+          "name": "Create Plant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "var id = j._id || (j.data && j.data._id);",
+                  "if (id) { pm.collectionVariables.set('plantId', id); console.log('plantId saved: ' + id); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"plantType\": \"Monstera Deliciosa\",\n    \"plantName\": \"Big Green Bob\",\n    \"initialAgeDays\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant"
+              ]
+            },
+            "description": "Creates a new plant for the authenticated user. The returned `_id` is saved to `{{plantId}}`.\n\n**Body fields:**\n- `plantType` *(required)* \u2014 common name of the plant\n- `initialAgeDays` *(optional, default 0)* \u2014 how many days old the plant already is at registration time. E.g. send `45` if the plant existed before the user installed the app. `daysOld` will grow from this baseline each day.\n- `pictureKey` *(optional)* \u2014 raw S3 object key. Obtain via the **Step 1 \u2014 Get Plant Image Upload URL** endpoint first.\n- `healthStatus` *(optional)* \u2014 `HEALTHY` | `DROOPING` | `DISEAED` | `DEAD`\n- `currentNeeds` *(optional)* \u2014 array of `WATER` | `SUNLIGHT` | `FERTILIZER` | `PRUNING`\n- `growthStage` *(optional)* \u2014 `SEED` | `SPROUT` | `MATURE` | `BLOOMING`\n\n**Response includes:**\n- `daysOld` \u2014 computed virtual (`initialAgeDays` + days since today)\n- `pictureUrl` \u2014 full raw S3 URL, or `null` if no picture uploaded yet"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All My Plants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant"
+              ]
+            },
+            "description": "Returns all plants belonging to the authenticated user. Each plant includes the computed `daysOld` virtual and `pictureUrl` (raw S3 URL or `null`)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Plant By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}"
+              ]
+            },
+            "description": "Returns a single plant by ID.\n\n**New fields in response:**\n- `pictureKey` \u2014 stored S3 object key (raw)\n- `pictureUrl` \u2014 full `https://<bucket>.s3.<region>.amazonaws.com/<key>` URL; `null` if no picture uploaded\n- `daysOld` \u2014 integer. Total age of the plant in days (`initialAgeDays` + days since registration)\n- `initialAgeDays` \u2014 the age offset provided at registration (stored in DB)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Plant",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"plantName\": \"Updated Nickname\",\n    \"initialAgeDays\": 45\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}"
+              ]
+            },
+            "description": "Updates one or more fields on a plant. At least one field is required.\n\n**Updatable fields:**\n- `pictureKey` \u2014 paste the `objectKey` from the upload-url endpoint to attach a photo\n- `initialAgeDays` \u2014 correct the plant's starting age (non-negative integer)\n- `healthStatus`, `currentNeeds`, `growthStage`, `plantType`, `lastWatered`\n\nOwnership is verified against the JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Plant",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}"
+              ]
+            },
+            "description": "Permanently deletes the plant. Ownership is verified against the JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Plant Dashboard State",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}/state",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}",
+                "state"
+              ]
+            },
+            "description": "Fetches the current dashboard state for the plant from Redis. Fallbacks to MongoDB SensorTelemetry, backfills Redis with 7-day TTL, and returns state if there is a cache miss."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Plant Historical Telemetry",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}/telemetry?range=7d",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}",
+                "telemetry"
+              ],
+              "query": [
+                {
+                  "key": "range",
+                  "value": "7d",
+                  "description": "Time range query parameter: 24h, 7d, or 30d (default is 7d)"
+                }
+              ]
+            },
+            "description": "Fetches historical charting data from the MongoDB Time-Series collection for the given plant within a date range (24h, 7d, or 30d)."
+          },
+          "response": []
+        },
+        {
+          "name": "Step 1 \u2014 Get Plant Image Upload URL",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var j = pm.response.json();",
+                  "if (j.data && j.data.objectKey) {",
+                  "  pm.collectionVariables.set('plantObjectKey', j.data.objectKey);",
+                  "  console.log('objectKey saved: ' + j.data.objectKey);",
+                  "}",
+                  "if (j.data && j.data.uploadUrl) {",
+                  "  pm.collectionVariables.set('plantUploadUrl', j.data.uploadUrl);",
+                  "  console.log('uploadUrl saved.');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"fileType\": \"jpg\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}/upload-url",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}",
+                "upload-url"
+              ]
+            },
+            "description": "**Step 1 of the plant image upload flow.**\n\nGenerates a presigned AWS S3 `PUT` URL so the client can upload a plant picture directly to S3 without routing through the backend.\n\n**Body:**\n- `fileType` *(required)* \u2014 `jpg` | `jpeg` | `png` | `webp`\n\n**Response:**\n```json\n{\n  \"success\": true,\n  \"data\": {\n    \"objectKey\": \"plants/<plantId>/<uuid>.jpg\",\n    \"uploadUrl\": \"https://...\"\n  }\n}\n```\n\nThe test script auto-saves:\n- `objectKey` \u2192 `{{plantObjectKey}}`\n- `uploadUrl` \u2192 `{{plantUploadUrl}}`\n\n**Notes:** URL expires in 5 min. CDN is disabled \u2014 raw S3 endpoint is used. Ownership of `{{plantId}}` is verified against the JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Step 2 \u2014 Upload Plant Image to S3 (PUT)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": ""
+              }
+            },
+            "url": {
+              "raw": "{{plantUploadUrl}}",
+              "host": [
+                "{{plantUploadUrl}}"
+              ]
+            },
+            "description": "**Step 2 of the plant image upload flow.**\n\nUse `{{plantUploadUrl}}` (auto-set by Step 1's test script) as the URL. Select the image in the **Binary** body tab.\n\n- **No Authorization header** \u2014 the presigned URL embeds AWS credentials\n- Must be completed within 5 minutes of Step 1\n- Expected S3 response: `200 OK` with empty body\n\nProceed to Step 3 after this succeeds."
+          },
+          "response": []
+        },
+        {
+          "name": "Step 3 \u2014 Persist Picture Key on Plant",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"pictureKey\": \"{{plantObjectKey}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}"
+              ]
+            },
+            "description": "**Step 3 of the plant image upload flow.**\n\nPersists the S3 `objectKey` from Step 1 on the plant document. After this, all `GET /plant/:id` responses will include:\n- `pictureKey` \u2014 the raw S3 key\n- `pictureUrl` \u2014 `https://<bucket>.s3.<region>.amazonaws.com/<key>`\n\n`{{plantObjectKey}}` is auto-set by the Step 1 test script."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Sensor Linking",
+      "description": "Routes for checking and assigning physical sensor hardware IDs to plants. All require Bearer auth.",
+      "item": [
+        {
+          "name": "Check Hardware ID Assignment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/sensor/check/ESP32_WIFI_01",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "sensor",
+                "check",
+                "ESP32_WIFI_01"
+              ]
+            },
+            "description": "Checks if the given `hardwareId` is already linked to any plant.\n\n**Responses:**\n- `{ isAssigned: false }` \u2014 hardware ID is free to use\n- `{ isAssigned: true, assignedPlantName: \"Monstera Deliciosa\" }` \u2014 already taken"
+          },
+          "response": []
+        },
+        {
+          "name": "Link Sensor to Plant",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"hardwareId\": \"ESP32_WIFI_01\",\n    \"forceReassign\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}/sensor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}",
+                "sensor"
+              ]
+            },
+            "description": "Links the given `hardwareId` to `{{plantId}}`.\n\n- If the ID is already taken and `forceReassign: false` \u2192 **409 Conflict**\n- If the ID is already taken and `forceReassign: true` \u2192 clears it from the old plant, assigns to this one\n- Ownership of `{{plantId}}` is verified against the JWT"
+          },
+          "response": []
+        },
+        {
+          "name": "Force Reassign Sensor",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"hardwareId\": \"ESP32_WIFI_01\",\n    \"forceReassign\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/plant/{{plantId}}/sensor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "plant",
+                "{{plantId}}",
+                "sensor"
+              ]
+            },
+            "description": "Same as Link Sensor but with `forceReassign: true`. Detaches from old plant first."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Diagnosis (AI Scan)",
+      "description": "Two-step flow: (1) Get a presigned S3 upload URL, (2) PUT the image directly to S3. The ML result arrives asynchronously via the `diagnosis_complete` Socket.IO event.",
+      "item": [
+        {
+          "name": "Step 1 \u2014 Request Upload URL",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var r = Math.random().toString(36).substring(7);",
+                  "var h = CryptoJS.SHA256(r).toString();",
+                  "pm.variables.set('dynamicSha256', h);",
+                  "console.log('Generated SHA256: ' + h);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sha256\": \"{{dynamicSha256}}\",\n    \"fileExtension\": \"jpg\",\n    \"plantType\": \"{{plantType}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/upload/upload-url",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "upload",
+                "upload-url"
+              ]
+            },
+            "description": "Generates a presigned S3 URL. A unique SHA256 is auto-generated by the pre-request script.\n\nResponse includes `uploadeUrl` (the S3 PUT target) and `Key` (the S3 object key)."
+          },
+          "response": []
+        },
+        {
+          "name": "Step 2 \u2014 Upload Image to S3 (PUT)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "file",
+              "file": {
+                "src": ""
+              }
+            },
+            "url": {
+              "raw": "<paste presignedUrl from Step 1 response here>",
+              "host": [
+                "<paste presignedUrl from Step 1 response here>"
+              ]
+            },
+            "description": "Paste the `uploadeUrl` from Step 1 into the URL field. Select your plant image file in the body (Binary). This uploads directly to S3 \u2014 no auth header needed."
+          },
+          "response": []
+        },
+        {
+          "name": "Fallback \u2014 Poll Scan Result",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/upload/scans/{{sha256}}?plantType={{plantType}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "upload",
+                "scans",
+                "{{sha256}}"
+              ],
+              "query": [
+                {
+                  "key": "plantType",
+                  "value": "{{plantType}}"
+                }
+              ]
+            },
+            "description": "Polls for a completed scan result by SHA256. Use as a fallback if the WebSocket event is not received (e.g., user was offline)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. E-Commerce \u2014 Products",
+      "description": "Public product catalog. No auth required for GET endpoints.",
+      "item": [
+        {
+          "name": "Get Products (Paginated)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/products?limit=20&sortBy=newest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Integer 1\u2013100, default 20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "newest",
+                  "description": "Enum: newest | price_asc | price_desc"
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Filter by category",
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "",
+                  "description": "ObjectId of last item for next page",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "",
+                  "description": "Min price filter",
+                  "disabled": true
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "",
+                  "description": "Max price filter",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns a cursor-paginated list of active products. Cached in Redis for 30 min."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "664b5952d7653c001f3b232a",
+                  "description": "24-char MongoDB ObjectId"
+                }
+              ]
+            },
+            "description": "Returns a single active product. Returns 404 if archived."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. E-Commerce \u2014 Cart",
+      "description": "Requires Bearer auth. Cart is strictly isolated per user via JWT.",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "cart"
+              ]
+            },
+            "description": "Retrieves the authenticated user's cart. Creates an empty one if none exists."
+          },
+          "response": []
+        },
+        {
+          "name": "Add / Update Cart Item",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"productId\": \"664b5952d7653c001f3b232a\",\n    \"quantity\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/cart/items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "cart",
+                "items"
+              ]
+            },
+            "description": "Adds a product or increments its quantity. Max 50 per item. Write-through cache sync."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/cart/items/:productId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "cart",
+                "items",
+                ":productId"
+              ],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "664b5952d7653c001f3b232a"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. E-Commerce \u2014 Orders",
+      "description": "Requires Bearer auth. Checkout uses an Idempotency-Key header to prevent duplicate orders.",
+      "item": [
+        {
+          "name": "Checkout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Idempotency-Key",
+                "value": "{{$guid}}",
+                "description": "Unique UUID per checkout attempt. Postman generates this dynamically.",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"shippingAddress\": {\n        \"street\": \"123 Nile Street\",\n        \"city\": \"Cairo\",\n        \"zipCode\": \"11511\",\n        \"country\": \"Egypt\"\n    },\n    \"paymentMethod\": \"CASH_ON_DELIVERY\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/orders/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "orders",
+                "checkout"
+              ]
+            },
+            "description": "Converts cart to order in a single ACID transaction. Deducts inventory atomically. Clears cart on success.\n\n- **409** if a product went out of stock mid-transaction\n- **409** if this `Idempotency-Key` was already used (returns the existing order)\n- **400** if the cart is empty"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ecom/orders?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ecom",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Offset page index"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Page size, max 50"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Admin \u2014 Products",
+      "description": "All routes require Bearer auth with `role: 'admin'` in the JWT. Returns 403 for regular users.",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Premium Organic Soil\",\n    \"description\": \"Enriched organic soil optimal for vegetable gardens and indoor plants.\",\n    \"sku\": \"SOIL-ORG-PREM-01\",\n    \"price\": 120.50,\n    \"currency\": \"EG\",\n    \"stockQuantity\": 500,\n    \"category\": \"soil\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products"
+              ]
+            },
+            "description": "Creates a new product. Purges all Redis listing cache keys on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"price\": 145.00,\n    \"stockQuantity\": 480\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "65f1a2b3c4d5e6f7a8b9c0d1"
+                }
+              ]
+            },
+            "description": "Updates an active product. Purges `product:{id}` and all listing keys from Redis. Logs PRODUCT_UPDATED audit entry."
+          },
+          "response": []
+        },
+        {
+          "name": "Soft-Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/products/:id",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "products",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "65f1a2b3c4d5e6f7a8b9c0d1"
+                }
+              ]
+            },
+            "description": "Archives the product (soft-delete). Sets `isArchived: true`. Purges Redis cache. Logs PRODUCT_ARCHIVED audit entry."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Dev Testing (non-prod only)",
+      "description": "Only available when NODE_ENV !== 'production'. Used to test the SQS telemetry pipeline locally without AWS.",
+      "item": [
+        {
+          "name": "Simulate Sensor Telemetry Message",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"metadata\": {\n        \"plant_id\": \"{{plantId}}\",\n        \"device_id\": \"ESP32_WIFI_01\",\n        \"user_id\": \"<your_userId_here>\"\n    },\n    \"garden_overview_screen\": {\n        \"system_alerts\": \"Soil moisture is critically low!\"\n    },\n    \"sensor_details_screen\": {\n        \"soil_moisture\": \"54%\",\n        \"temperature\": \"25 C\",\n        \"air_humidity\": \"60%\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/dev/sqs/test-sensor",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "dev",
+                "sqs",
+                "test-sensor"
+              ]
+            },
+            "description": "Bypasses AWS SQS entirely. Posts the ML payload directly to the worker's processing function.\n\nOn success, the following happen simultaneously:\n1. Redis key `enviro:plant:state:{plantId}` is written (7-day TTL)\n2. A `SensorTelemetry` document is saved to MongoDB (Time-Series collection)\n\nNote: WebSockets are dropped; the client queries the dashboard state via HTTP GET."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

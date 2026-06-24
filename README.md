@@ -1,4 +1,4 @@
-# 🌿 Enviro App
+# Enviro App
 
 ## Quick start
 ```bash
@@ -6,7 +6,7 @@ npm install
 cp .env.example .env   # fill in your keys
 npm run dev
 ```
-Open: http://localhost:5173
+Open: http://localhost:8000
 
 ---
 
@@ -50,6 +50,3 @@ Search for `// ── BACKEND: uncomment when ready ──` in these files:
 - `src/pages/Soil.jsx` → soil analysis
 
 ---
-
-## Hide Samsung nav bar
-See `SAMSUNG_NAVBAR.md` for exact steps.

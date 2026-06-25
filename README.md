@@ -23,7 +23,6 @@ Open: http://localhost:8000
 ## Environment variables (.env)
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api
-VITE_WEATHER_API_KEY=your_key_here
 ```
 Get free weather key: https://openweathermap.org/api
 

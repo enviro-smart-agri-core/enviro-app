@@ -16,15 +16,28 @@ function getUserId() {
 }
 
 const PLANT_TYPE_MAP = {
+  // Capitalized (from display names)
   'Tomato':             'tomato',
-  'Pepper':             'pepper',
+  'Strawberry':         'strawberry',
   'Potato':             'potato',
+  'Pepper':             'pepper',
   'Corn':               'corn',
   'Wheat':              'wheat',
   'Rose':               'rose',
   'Basil':              'basil',
   'Monstera Deliciosa': 'monstera',
   'Unknown Plant':      'tomato',
+  // Lowercase (from generic selection)
+  'tomato':             'tomato',
+  'strawberry':         'strawberry',
+  'potato':             'potato',
+  'pepper':             'pepper',
+  'corn':               'corn',
+  'wheat':              'wheat',
+  'rose':               'rose',
+  'basil':              'basil',
+  'unknown':            'tomato',
+  'unkn':               'tomato',
 }
 
 function parseResult(raw, plantType) {
@@ -71,20 +84,28 @@ function parseResult(raw, plantType) {
   }
 }
 
-export async function runDiagnosis(imageFile, plantType = 'Tomato') {
+export async function runDiagnosis(imageFile, plantType = 'Tomato', plantId = null) {
   const token  = localStorage.getItem('enviro_token')
   const userId = getUserId()
 
   if (!token)  throw new Error('You need to be logged in')
   if (!userId) throw new Error('Could not find user ID — log out and back in')
 
-  const pType = plantType.toLowerCase().trim()
+  // Normalize: map known types, fallback to the value itself, default 'tomato'
+  const KNOWN = ['tomato', 'strawberry', 'potato', 'pepper', 'corn', 'wheat', 'rose', 'basil', 'monstera']
+  const rawType = plantType.toLowerCase().trim()
+  const pType   = KNOWN.includes(rawType)
+    ? rawType
+    : (PLANT_TYPE_MAP[plantType] || PLANT_TYPE_MAP[plantType.trim()] || 'tomato')
 
-  console.log('[Diagnosis] plantType sent to backend:', pType)
+  console.log('[Diagnosis] plantType received:', plantType, '→ normalized:', pType, '| plantId:', plantId)
 
   const sha256 = await hashFile(imageFile)
   const ext    = imageFile.name?.split('.').pop()?.toLowerCase() || 'jpg'
   console.log('[Diagnosis] sha256:', sha256)
+
+  const uploadBody = { sha256, fileExtension: ext, plantType: pType }
+  if (plantId) uploadBody.plantId = plantId
 
   const urlTheWord = await fetch(`${ENV.API_BASE_URL}/api/v1/upload/upload-url`, {
     method:  'POST',
@@ -93,7 +114,7 @@ export async function runDiagnosis(imageFile, plantType = 'Tomato') {
       'Authorization': `Bearer ${token}`,
     },
 
-    body: JSON.stringify({ sha256, fileExtension: ext, plantType: pType }),
+    body: JSON.stringify(uploadBody),
   })
 
   const urlText = await urlTheWord.text()

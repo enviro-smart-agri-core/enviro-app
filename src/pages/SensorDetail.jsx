@@ -11,6 +11,113 @@ import { usePlantDashboard } from '../hooks/usePlantDashboard'
 import { deletePlant, updatePlantPhoto } from '../api/plantDevice'
 import { ENV } from '../config/env'
 
+/**
+ * Maps real plant sensor / health data to avatar image (1–8).
+ *
+ * Image legend (matches renamed files):
+ *  1 – Healthy Hero      → healthy plant, happy tomato
+ *  2 – The Suffocated    → fungal diseases (powdery mildew, blight, gray mold…)
+ *  3 – The Melting       → bacterial diseases (bacterial spot, soft rot…)
+ *  4 – The Glitch        → viral diseases (leaf curl virus, mosaic…)
+ *  5 – The Itchy         → insects & pests (spider mites, tuta absoluta…)
+ *  6 – The Thirsty       → water / physiological stress (dry soil, fruit cracking…)
+ *  7 – The Hungry        → nutrient deficiencies (chlorosis, calcium deficiency…)
+ *  8 – The Sore          → environmental stress (root issues, bruising, cold damage…)
+ */
+function getGameImage({
+  healthStatus,
+  systemAlert,
+  moistureTag,
+  tempTag,
+  humidityTag,
+  soilAlertTag,
+  hasHardware,
+  hasSensorData,
+  connStatus,
+}) {
+  const hs = (healthStatus  || '').toLowerCase()
+  const sa = (systemAlert   || '').toLowerCase()
+  const mt = (moistureTag   || '').toLowerCase()
+  const tt = (tempTag       || '').toLowerCase()
+  const ht = (humidityTag   || '').toLowerCase()
+  const st = (soilAlertTag  || '').toLowerCase()
+
+  // 8 – The Sore: no hardware linked at all (environmental / no-sensor state)
+  if (!hasHardware && !hasSensorData) return 8
+
+  // 6 – The Thirsty: dry/low soil moisture wins before anything else
+  //     catches "Dry - critical" tag from the sensor
+  if (mt.includes('dry') || mt.includes('thirst') || mt.includes('low')
+    || st.includes('dry') || st.includes('thirst')) return 6
+
+  // 3 – The Melting: only true system-level danger (not moisture tags)
+  if (sa.includes('critical') || sa.includes('danger') || sa.includes('dying')
+    || hs.includes('critical') || hs.includes('danger')) return 3
+
+  // 7 – The Hungry: nutrient-related → temperature extremes cause similar
+  //     yellow/pale look; also catches cold stress (burnt tips)
+  if (tt.includes('cold') || tt.includes('cool') || tt.includes('frost')
+    || hs.includes('yellow') || hs.includes('nutrient') || hs.includes('deficien')) return 7
+
+  // 8 – The Sore: extreme heat / environmental damage (bruising, root stress)
+  if (tt.includes('hot') || tt.includes('high') || tt.includes('extreme')
+    || tt.includes('heat') || st.includes('brown') || st.includes('root')
+    || hs.includes('sore') || hs.includes('environmental')) return 8
+
+  // 5 – The Itchy: warning-level alerts, pest-like stress signals
+  if (sa.includes('warning') || sa.includes('alert') || sa.includes('pest')
+    || ht.includes('low') || hs.includes('stress') || hs.includes('warning')) return 5
+
+  // 2 – The Suffocated: moisture not ideal but not dry; fungal-like humidity issue
+  if ((mt && mt !== 'optimal' && mt !== 'good' && mt !== 'normal' && mt !== 'moist')
+    || hs === 'needs care' || hs.includes('attention') || hs.includes('poor')
+    || hs.includes('fungal') || hs.includes('mildew') || hs.includes('blight')) return 2
+
+  // 1 – The Healthy Hero: explicitly healthy with good readings
+  if ((hs === 'healthy' || hs.includes('good') || hs.includes('excellent'))
+    && !sa
+    && (mt.includes('optimal') || mt.includes('good') || mt.includes('moist') || mt.includes('normal') || !mt)) return 1
+
+  // Has sensor data with no specific issue → still healthy
+  if (hasSensorData && !sa) return 1
+
+  return 4 // The Glitch: default fallback (confused/neutral)
+}
+
+// Actual filenames in /public/images/plants/
+const GAME_IMG = {
+  1: 'healthy.png',
+  2: 'The Suffocated.png',
+  3: 'melting.png',
+  4: 'glitch.png',
+  5: 'itchy.png',
+  6: 'thirsty.png',
+  7: 'hungry.png',
+  8: 'sore.png',
+}
+
+const GAME_STATE_LABELS = {
+  1: 'Healthy',
+  2: 'The Suffocated',
+  3: 'The Melting',
+  4: 'The Glitch',
+  5: 'The Itchy',
+  6: 'The Thirsty',
+  7: 'The Hungry',
+  8: 'The Sore',
+}
+
+const GAME_STATE_COLORS = {
+  1: { bg: 'linear-gradient(135deg,#d4f0e0,#a8e6c0)', color: '#0a4a28', badge: '#27ae60' },
+  2: { bg: 'linear-gradient(135deg,#f0f0f0,#d8d8d8)', color: '#3a3a3a', badge: '#7f8c8d' },
+  3: { bg: 'linear-gradient(135deg,#e8f5e9,#c8e6c9)', color: '#1b5e20', badge: '#388e3c' },
+  4: { bg: 'linear-gradient(135deg,#fff9c4,#fff176)', color: '#5a4800', badge: '#f9a825' },
+  5: { bg: 'linear-gradient(135deg,#fff3e0,#ffe0b2)', color: '#6a3a00', badge: '#e67e22' },
+  6: { bg: 'linear-gradient(135deg,#e3f2fd,#bbdefb)', color: '#0a3a6a', badge: '#1e88e5' },
+  7: { bg: 'linear-gradient(135deg,#fffde7,#fff9c4)', color: '#5a4000', badge: '#f9a825' },
+  8: { bg: 'linear-gradient(135deg,#f3e5f5,#e1bee7)', color: '#4a0072', badge: '#8e24aa' },
+}
+
 function getImageUrl(url) {
   if (!url) return '/images/leaf.png'
   if (url.startsWith('http')) return url
@@ -184,6 +291,82 @@ export default function SensorDetail() {
       </div>
 
       <div className="content">
+
+        {/* ── Gamification Plant Avatar: ONLY from saved scan result ── */}
+        {(() => {
+          let scanState = null
+          try {
+            const raw = localStorage.getItem(`enviro_scan_state_${id}`)
+            if (raw) {
+              const parsed    = JSON.parse(raw)
+              const ageMs     = Date.now() - (parsed.timestamp || 0)
+              const sevenDays = 7 * 24 * 60 * 60 * 1000
+              if (ageMs < sevenDays) scanState = parsed
+            }
+          } catch {}
+
+          if (!scanState) {
+            // No scan yet — show a clean placeholder
+            return (
+              <div style={{
+                background: 'white',
+                borderRadius: 24,
+                padding: '28px 20px',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                border: '1.5px dashed #c0d0c0',
+              }}>
+                <img
+                  src="/images/plants/glitch.png"
+                  alt="No scan yet"
+                  style={{ width: 120, height: 120, objectFit: 'contain', opacity: 0.25, filter: 'grayscale(1)' }}
+                />
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#bbb', marginTop: 4 }}>
+                  No scan yet
+                </div>
+                <div style={{ fontSize: 11, color: '#ccc', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                  Game State
+                </div>
+                <div style={{ fontSize: 12, color: '#bbb', textAlign: 'center', lineHeight: 1.5 }}>
+                  Scan this plant to reveal its game state
+                </div>
+              </div>
+            )
+          }
+
+          const imgNum  = scanState.imgNum
+          const palette = GAME_STATE_COLORS[imgNum] || GAME_STATE_COLORS[4]
+          const label   = scanState.label || GAME_STATE_LABELS[imgNum]
+          return (
+            <div style={{
+              background: palette.bg,
+              borderRadius: 24,
+              padding: '24px 20px 20px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: 0, marginBottom: 4, position: 'relative', overflow: 'hidden',
+            }}>
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, height: 3,
+                background: `linear-gradient(90deg, transparent, ${palette.badge}, transparent)`,
+                opacity: 0.6,
+              }} />
+              <img
+                src={`/images/plants/${GAME_IMG[imgNum]}`}
+                alt="Plant state"
+                style={{
+                  width: 160, height: 160, objectFit: 'contain',
+                  filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.13))',
+                  animation: 'plantBob 3s ease-in-out infinite',
+                }}
+              />
+              <div style={{ marginTop: 14, fontSize: 16, fontWeight: 800, color: palette.color, letterSpacing: '0.01em' }}>
+                {label}
+              </div>
+              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: palette.color, opacity: 0.6, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Game State
+              </div>
+            </div>
+          )
+        })()}
 
         {systemAlert && (
           <div style={{ background: isCritical ? '#fff0f0' : '#fff8e1', border: `1.5px solid ${isCritical ? '#f5c6c6' : '#ffe082'}`, borderRadius: 16, padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start' }}>

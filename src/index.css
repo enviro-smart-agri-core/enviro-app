@@ -35,6 +35,11 @@ body {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+@keyframes plantBob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25%       { transform: translateY(-6px) rotate(0.8deg); }
+  75%       { transform: translateY(-3px) rotate(-0.8deg); }
+}
 
 .dope3  { animation: fadeUp  0.45s cubic-bezier(0.25, 0.8, 0.25, 1) both; }
 .drip4  { animation: fadeIn  0.35s ease both; }

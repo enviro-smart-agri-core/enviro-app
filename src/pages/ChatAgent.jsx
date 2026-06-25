@@ -65,7 +65,7 @@ export default function ChatAgent() {
       setMessages(prev => [...prev, { role: 'agent', text: reply }])
     } catch (err) {
       console.error('AI Chat Error:', err)
-      setMessages(prev => [...prev, { role: 'agent', text: "Sorry, abdo ass is too big" }])
+      setMessages(prev => [...prev, { role: 'agent', text: "Sorry, Our Server is underload" }])
     } finally {
       setIsLoading(false)
     }
@@ -73,7 +73,6 @@ export default function ChatAgent() {
 
   return (
     <div className="page" style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: 0 }}>
-      { }
       <div style={{
         padding: 'calc(20px + env(safe-area-inset-top, 0px)) 20px 20px 20px',
         background: 'var(--gp)',
@@ -115,8 +114,6 @@ export default function ChatAgent() {
           ))}
         </select>
       </div>
-
-      { }
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px', background: '#f9fbf9' }}>
         {messages.map((m, i) => (
           <div key={i} style={{
@@ -159,8 +156,6 @@ export default function ChatAgent() {
           </div>
         )}
       </div>
-
-      { }
       <form onSubmit={handleSend} style={{
         padding: '15px 20px',
         background: 'white',

@@ -46,6 +46,5 @@ Search for `// ── BACKEND: uncomment when ready ──` in these files:
 - `src/pages/Scan.jsx` → disease scan
 - `src/pages/Home.jsx` → water saved + crop status
 - `src/pages/Water.jsx` → sensor data + force water
-- `src/pages/Soil.jsx` → soil analysis
 
 ---

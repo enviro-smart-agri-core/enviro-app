@@ -40,11 +40,4 @@ Get free weather key: https://openweathermap.org/api
 | GET | `/farm/crop` | — | `{day,totalDays,harvestIn}` |
 | POST | `/farm/scan` | FormData(image) | `{name,confidence,disease,advice}` |
 
-## To activate backend calls
-Search for `// ── BACKEND: uncomment when ready ──` in these files:
-- `src/context/AuthContext.jsx` → login + register
-- `src/pages/Scan.jsx` → disease scan
-- `src/pages/Home.jsx` → water saved + crop status
-- `src/pages/Water.jsx` → sensor data + force water
-
 ---
